@@ -9,4 +9,8 @@ router.get('/', (req, res) => {
   renderTemplate(Home, {}, res);
 });
 
+router.get('*', (req, res) => {
+  res.redirect('/');
+});
+
 module.exports = router;

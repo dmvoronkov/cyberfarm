@@ -10,11 +10,4 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     loadLoginForm(container);
   }
-
-  // function init() {
-  //   const isoWorld = new IsoWorld();
-  //   isoWorld.init('isometric-canvas', '/images/tilesheet.png');
-  // }
-
-  // init();
 });

@@ -10,12 +10,15 @@ module.exports = function Layout({ children }) {
         <link rel="stylesheet" href="/css/normalize.css" />
         <link rel="stylesheet" href="/css/style.css" />
         <link rel="stylesheet" href="/css/forms.css" />
-        <script defer src="/js/forms.js" />
         <script defer src="/js/IsoWorld.js" />
+        <script defer src="/js/forms.js" />
+        <script defer src="/js/common.js" />
         <script defer src="/js/application.js" />
       </head>
       <body>
-        {children}
+        <div className="neon-bg">
+          {children}
+        </div>
       </body>
     </html>
   );

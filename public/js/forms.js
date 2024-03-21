@@ -8,8 +8,34 @@ function loadMenu(container) {
     <a class="button" id="newGameBtn" href="#">Новая игра</a>
     <a class="button" id="loadGameBtn" href="#">Загрузить игру</a>
     <a class="button" id="statsBtn" href="#">Статистика</a>
-    <a class="button" id="logoutBtn" href="/api/user/logout">Выйти</a>`;
+    <a class="button" id="logoutBtn" href="#">Выйти</a>`;
   container.appendChild(formContainer);
+
+  const newGameBtn = formContainer.querySelector('#newGameBtn');
+  const loadGameBtn = formContainer.querySelector('#loadGameBtn');
+  const statsBtn = formContainer.querySelector('#statsBtn');
+  const logoutBtn = formContainer.querySelector('#logoutBtn');
+
+  newGameBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    startNewGame(container);
+  });
+
+  logoutBtn.addEventListener('click', async (event) => {
+    event.preventDefault();
+    try {
+      const response = await fetch('/api/user/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const result = await response.json();
+      loadLoginForm(container);
+    } catch (error) {
+      console.log(error);
+    }
+  });
 }
 
 function loadRegisterForm(container) {

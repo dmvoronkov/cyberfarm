@@ -55,10 +55,10 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.get('/logout', (req, res) => {
+router.post('/logout', (req, res) => {
   req.session.destroy(() => {
     res.clearCookie('cyberfarm');
-    res.redirect('/');
+    res.json({ status: '200' });
   });
 });
 

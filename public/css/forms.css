@@ -1,5 +1,5 @@
 .form-container {
-  background-color: #cccccc;
+  background: rgba(0, 0, 0, 0.7);
   border-radius: 20px;
   padding: 100px;
 }
@@ -17,12 +17,13 @@ input[type=password] {
 
 button,
 a.button {
+  font-weight: bold;
   display: block;
   text-decoration: none;
   text-align: center;
   margin-bottom: 30px;
   color: white;
-  background-color: #333333;
+  background-color: #1ba5c7;
   border-radius: 6px;
   padding: 15px;
   width: 100%;
@@ -41,5 +42,5 @@ form .error {
 .form-footer,
 .form-footer a {
   text-align: center;
-  color: black;
+  color: white;
 }
