@@ -1,5 +1,6 @@
 function loadMenu(container) {
   container.innerHTML = '';
+  container.className = 'container neon-bg';
   const formContainer = document.createElement('div');
   formContainer.className = 'form-container';
   formContainer.innerHTML = `
@@ -40,6 +41,7 @@ function loadMenu(container) {
 
 function loadRegisterForm(container) {
   container.innerHTML = '';
+  container.className = 'container neon-bg';
   const formContainer = document.createElement('div');
   formContainer.className = 'form-container';
   const registerForm = document.createElement('form');
@@ -113,6 +115,7 @@ function loadRegisterForm(container) {
 
 function loadLoginForm(container) {
   container.innerHTML = '';
+  container.className = 'container neon-bg';
   const formContainer = document.createElement('div');
   formContainer.className = 'form-container';
   const loginForm = document.createElement('form');

@@ -22,8 +22,6 @@ body {
 }
 
 .neon-bg {
-  width: 100%;
-  height: 100%;
   background-image: url('../images/neon-bg.png');
   background-position: center center;
   background-repeat: no-repeat;

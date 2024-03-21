@@ -13,6 +13,15 @@ class Plot {
     this.skin = this.plant.skin;
   }
 
+  harvestPlant() {
+    const { harvest } = this.plant;
+    this.plant.isAlive = false;
+    this.plant.skin = 8;
+    this.plant.harvest = 0;
+    this.changeSkin(this.plant.skin);
+    return harvest;
+  }
+
   changeSkin(skin) {
     this.skin = skin;
   }

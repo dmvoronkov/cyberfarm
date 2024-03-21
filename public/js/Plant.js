@@ -4,20 +4,18 @@ class Plant {
     this.harvest = 0;
     this.isAlive = true;
     this.harvestRange = [200, 350];
-    this.skin = 4;
+    this.skin = 5;
   }
 
   passGrowingSeason() {
-    this.age += 1;
-    this.setHarvest();
-    // if (this.age >= 6 && this.age <= 25) {
-    //   this.setHarvest();
-    // }
-    if (this.age >= 26) {
-      this.isAlive = false;
-      this.harvest = 0;
+    this.age += 0.25;
+    if (this.age >= 0.5 && this.age < 1 && this.isAlive) {
+      this.skin = 6;
     }
-    return this.harvest;
+    if (this.age >= 1 && this.isAlive && this.harvest === 0) {
+      this.skin = 7;
+      this.setHarvest();
+    }
   }
 
   setHarvest() {

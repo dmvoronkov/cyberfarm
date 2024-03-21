@@ -1,5 +1,6 @@
 function startNewGame(container) {
   container.innerHTML = '';
+  container.className = 'container';
   const canvas = document.createElement('canvas');
   canvas.id = 'isometric-canvas';
   container.appendChild(canvas);

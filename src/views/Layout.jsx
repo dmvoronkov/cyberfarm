@@ -18,9 +18,7 @@ module.exports = function Layout({ children }) {
         <script defer src="/js/application.js" />
       </head>
       <body>
-        <div className="neon-bg">
-          {children}
-        </div>
+        {children}
       </body>
     </html>
   );
