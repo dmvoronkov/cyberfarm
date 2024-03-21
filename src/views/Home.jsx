@@ -6,7 +6,7 @@ module.exports = function Home() {
   return (
     <Layout>
       <div className="container">
-        <header>
+        {/* <header>
           <h1 id="game-title">Cyber Farm</h1>
           <h3>Survive in post-apocalyptic world</h3>
         </header>
@@ -16,7 +16,7 @@ module.exports = function Home() {
             <div className="label" id="screenCoords" />
             <div className="label" id="gridCoords" />
           </div>
-        </div>
+        </div> */}
       </div>
     </Layout>
   );

@@ -48,6 +48,10 @@ h2 {
 .container {
   max-width: 960px;
   margin: 0 auto;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .game-container {}

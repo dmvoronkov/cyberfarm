@@ -28,11 +28,23 @@ router.post('/', async (req, res) => {
     await user.save();
     req.session.login = user.username;
     req.session.save(() => {
-      res.redirect('/api/user/menu');
-      // res.json({ status: '201', id: user.id });
+      res.json({ status: '201', id: user.id });
     });
-  } catch (err) {
-    res.json({ status: '422' });
+  } catch (error) {
+    let message;
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      switch (error.parent.constraint) {
+        case 'Users_username_key':
+          message = 'Пользователь с таким именем уже существует';
+          break;
+        case 'Users_email_key':
+          message = 'Пользователь с таким email уже существует';
+          break;
+        default:
+          message = 'Поля username и email должны быть уникальны';
+      }
+    }
+    res.json({ status: '422', error: error.parent.constraint, message });
   }
 });
 
@@ -41,30 +53,27 @@ router.post('/login', async (req, res) => {
   try {
     const user = await User.findOne({ where: { username } });
     if (!user) {
-      res.json({ err: 'Такой пользователь не найден!' });
+      res.json({ status: '404', message: 'Пользователь не найден' });
     } else {
-      // * сравнение паролей, compare возвращает true/false
       const checkPass = await bcrypt.compare(password, user.password);
       if (!checkPass) {
-        res.json({ err: 'Неверный пароль!' });
+        res.json({ status: '403', message: 'Неверный пароль' });
       } else {
-        // * создаём сессию <3
         req.session.login = user.username;
         req.session.save(() => {
-          res.redirect('/');
-          // res.json({ msg: 'Вы успешно авторизованы!' });
+          res.json({ status: '200', message: 'Вы успешно авторизованы', username: user.username });
         });
       }
     }
   } catch (error) {
     console.log(error);
-    res.json({ err: 'Ошибка при авторизации!' });
+    res.json({ status: '500', message: 'Ошибка при авторизации' });
   }
 });
 
 router.get('/logout', (req, res) => {
   req.session.destroy(() => {
-    res.clearCookie('CyberfarmCookie');
+    res.clearCookie('cyberfarm');
     res.redirect('/');
   });
 });

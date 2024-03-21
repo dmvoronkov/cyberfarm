@@ -14,14 +14,14 @@ const indexRouter = require('./src/routes/index.router');
 const apiRouter = require('./src/routes/api.router');
 
 const sessionConfig = {
-  name: 'CyberfarmCookie',
+  name: 'cyberfarm',
   store: new FileStore(),
   secret: process.env.SESSION_SECRET ?? 'Секретное слово',
   resave: false,
   saveUninitialized: false,
   cookie: {
     maxAge: 9999999,
-    httpOnly: true,
+    httpOnly: false,
   },
 };
 
