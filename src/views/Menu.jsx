@@ -11,7 +11,7 @@ module.exports = function Menu() {
           <a className="button" id="newGameBtn" href="#">Новая игра</a>
           <a className="button" id="loadGameBtn" href="#">Загрузить игру</a>
           <a className="button" id="statsBtn" href="#">Статистика</a>
-          <a className="button" id="logoutBtn" href="#">Выйти</a>
+          <a className="button" id="logoutBtn" href="/api/user/logout">Выйти</a>
         </div>
       </div>
     </Layout>
