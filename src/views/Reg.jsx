@@ -8,6 +8,7 @@ module.exports = function Reg() {
       <div className="container" id="form-flex">
         <div className="form-container">
           <h1 id="game-title">Cyber Farm</h1>
+          <h2>Регистрация</h2>
           <form method="POST" action="/api/user">
             <input type="text" name="username" id="username" placeholder="Введите уникальное имя" required />
             <div className="error username-error" />
