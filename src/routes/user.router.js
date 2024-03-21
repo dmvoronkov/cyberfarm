@@ -1,24 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const renderTemplate = require('../lib/renderTemplate');
-const Reg = require('../views/Reg');
-const Menu = require('../views/Menu');
-const Login = require('../views/Login');
 const { User } = require('../../db/models');
 
 const router = express.Router();
-
-router.get('/register', (req, res) => {
-  renderTemplate(Reg, {}, res);
-});
-
-router.get('/menu', (req, res) => {
-  renderTemplate(Menu, {}, res);
-});
-
-router.get('/login', (req, res) => {
-  renderTemplate(Login, {}, res);
-});
 
 router.post('/', async (req, res) => {
   try {
