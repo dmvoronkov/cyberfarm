@@ -10,6 +10,8 @@ module.exports = function Layout({ children }) {
         <link rel="stylesheet" href="/css/normalize.css" />
         <link rel="stylesheet" href="/css/style.css" />
         <link rel="stylesheet" href="/css/forms.css" />
+        <script defer src="/js/Plant.js" />
+        <script defer src="/js/Plot.js" />
         <script defer src="/js/IsoWorld.js" />
         <script defer src="/js/forms.js" />
         <script defer src="/js/common.js" />

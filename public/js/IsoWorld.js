@@ -3,6 +3,14 @@ class IsoWorld {
     this.viewportWidth = 960;
     this.viewportHeight = 480;
 
+    this.numRows = 9;
+    this.numCols = 9;
+
+    this.harvest = 0;
+    this.energy = 1000;
+    this.year = 1;
+    this.plots = [];
+
     this.canvas = null;
 	  this.context = null;
     this.tileSheetImg = null;
@@ -72,11 +80,34 @@ class IsoWorld {
     this.canvas.onmouseclick = (e) => { e.stopPropagation(); e.preventDefault(); return false; };
 	  this.canvas.oncontextmenu = (e) => { e.stopPropagation(); e.preventDefault(); return false; };
 	  this.canvas.onmouseup = (e) => { this.mouseDown = false; return false; };
-	  this.canvas.onmousedown = (e) => { this.mouseDown = true; return false; };
+	  this.canvas.onmousedown = (e) => { this.onMouseDown(e); this.mouseDown = true; return false; };
     this.canvas.onmousemove = (e) => { this.onMouseMove(e); };
 
     this.updateMapOffset(300, -100);
     this.mainLoop();
+    this.startSeasons();
+  }
+
+  startSeasons() {
+    setTimeout(() => {
+      this.passGrowingSeason();
+    }, 5000);
+  }
+
+  passGrowingSeason() {
+    setInterval(() => {
+      this.harvest = 0;
+      this.plots.filter((plot) => plot.hasPlant).forEach((plot) => {
+        this.harvestPlant(plot.plant);
+        plot.plant.passGrowingSeason();
+        plot.changeSkin(plot.plant.skin);
+      });
+      this.year += 1;
+    }, 5000);
+  }
+
+  harvestPlant(plant) {
+    this.harvest += plant.harvest;
   }
 
   clearViewport(color) {
@@ -106,18 +137,12 @@ class IsoWorld {
   }
 
   buildMap() {
-    this.tileMap = [
-      [1, 1, 1, 2, 2, 2, 2, 2, 2],
-      [1, 1, 2, 2, 2, 2, 2, 2, 2],
-      [2, 2, 2, 2, 2, 1, 2, 2, 2],
-      [2, 1, 2, 2, 1, 1, 2, 2, 2],
-      [2, 2, 2, 2, 2, 2, 1, 2, 2],
-      [2, 2, 1, 2, 2, 2, 2, 2, 3],
-      [2, 2, 2, 2, 2, 2, 2, 3, 3],
-      [2, 2, 2, 2, 2, 2, 2, 3, 4],
-      [2, 2, 2, 2, 2, 2, 3, 4, 4],
-
-    ];
+    const map = new Array(this.numRows).fill(new Array(this.numCols).fill(''));
+    for (let x = 0; x < map.length; x++) {
+      map[x] = map[x].map((el, y) => new Plot(1, x, y));
+    }
+    this.tileMap = map;
+    this.plots = map.flat();
   }
 
   mainLoop() {
@@ -179,7 +204,7 @@ class IsoWorld {
   draw() {
     for (let x = this.renderStartX; x <= this.renderFinishX; x++) {
       for (let y = this.renderStartY; y <= this.renderFinishY; y++) {
-        const drawTile = this.tileMap[x][y];
+        const drawTile = this.tileMap[x][y].skin;
 
         const spriteWidth = this.blockWidth + (2 * this.spritePadding);
         const spriteHeight = this.blockHeight + (2 * this.spritePadding);
@@ -250,5 +275,11 @@ class IsoWorld {
     this.mouseTileY = mouseTilePos.y;
 
     // if (this.mouseDown) this.updateMapOffset(mouseDeltaX, mouseDeltaY);
+  }
+
+  onMouseDown(e) {
+    this.tileMap[this.mouseTileX][this.mouseTileY].skin += 1;
+    const plot = this.plots.find((plot) => plot.x === this.mouseTileX && plot.y === this.mouseTileY);
+    plot.setPlant(new Plant());
   }
 }
