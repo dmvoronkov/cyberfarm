@@ -14,9 +14,9 @@ app.use(morgan('dev'));
 app.use(express.static(path.join(process.cwd(), 'public')));
 
 const indexRouter = require('./src/routes/index.router');
-// const apiRouter = require('./src/routes/api.router');
+const apiRouter = require('./src/routes/api.router');
 
 app.use('/', indexRouter);
-// app.use('/api', apiRouter);
+app.use('/api', apiRouter);
 
 app.listen(PORT, () => console.log(`Сервер запущен: http://localhost:${PORT}`));

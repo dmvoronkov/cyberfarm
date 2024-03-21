@@ -1,0 +1,44 @@
+#form-flex {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-container {
+  background-color: #cccccc;
+  border-radius: 20px;
+  padding: 100px;
+}
+
+input[type=text],
+input[type=email],
+input[type=password] {
+  color: black;
+  border-radius: 6px;
+  padding: 10px;
+  outline: none;
+  border: none;
+  width: 100%;
+}
+
+button,
+a.button {
+  display: block;
+  text-decoration: none;
+  text-align: center;
+  margin-bottom: 30px;
+  color: white;
+  background-color: #333333;
+  border-radius: 6px;
+  padding: 10px 20px;
+  width: 100%;
+  outline: none;
+  border: none;
+}
+
+form .error {
+  height: 30px;
+  line-height: 30px;
+  color: red;
+}
