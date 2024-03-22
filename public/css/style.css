@@ -53,7 +53,7 @@ h2 {
 }
 
 .container {
-  max-width: 960px;
+  max-width: 1200px;
   margin: 0 auto;
   height: 100%;
   display: flex;
@@ -61,7 +61,51 @@ h2 {
   align-items: center;
 }
 
-.game-container {}
+header {
+  background: rgba(0, 0, 0, 0.7);
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  height: 100px;
+  padding: 0 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header #game-logo {
+  font-family: 'CyberwayRiders';
+  font-size: 60px;
+  margin: 0;
+  color: #9a00d5;
+}
+
+header .stats {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  color: white;
+  font-size: 22px;
+}
+
+header .stats div {
+  margin: 0 20px;
+}
+
+header .stats .digits {
+  font-weight: bold;
+  color: #37d7ff;
+}
+
+header a.button {
+  margin-bottom: 0;
+}
+
+.game-container {
+  padding: 120px;
+  background-image: url('../images/neon-bg-2.png');
+  background-position: center center;
+  background-repeat: no-repeat;
+}
 
 canvas {
   display: block;

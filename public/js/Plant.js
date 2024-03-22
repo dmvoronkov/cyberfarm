@@ -3,7 +3,7 @@ class Plant {
     this.age = 0;
     this.harvest = 0;
     this.isAlive = true;
-    this.harvestRange = [200, 350];
+    this.harvestRange = [20, 70];
     this.skin = 5;
   }
 

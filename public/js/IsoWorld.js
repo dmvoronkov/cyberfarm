@@ -1,11 +1,14 @@
 class IsoWorld {
   constructor() {
+    this.isPlaying = false;
+
     this.viewportWidth = 960;
     this.viewportHeight = 480;
 
     this.numRows = 9;
     this.numCols = 9;
 
+    this.requiredHarvest = 500;
     this.harvest = 0;
     this.energy = 1000;
     this.year = 1;
@@ -58,6 +61,10 @@ class IsoWorld {
   }
 
   async init(canvasId, tileSheetURI) {
+    this.isPlaying = true;
+    const requiredHarvestSpan = document.querySelector('#required-harvest');
+    requiredHarvestSpan.innerText = this.requiredHarvest;
+
     this.canvas = document.getElementById(canvasId);
 
     if (this.canvas == null) {
@@ -109,6 +116,45 @@ class IsoWorld {
 	  this.context.fillRect(0, 0, this.viewportWidth, this.viewportHeight);
   }
 
+  printStats() {
+    const harvestedSpan = document.querySelector('#harvested');
+    harvestedSpan.innerText = this.harvest;
+    const energySpan = document.querySelector('#energy');
+    energySpan.innerText = this.energy;
+  }
+
+  save() {
+
+  }
+
+  win() {
+    this.isPlaying = false;
+
+    this.context.font = '30px Courier New';
+    this.context.textAlign = 'center';
+    this.context.textBaseline = 'middle';
+    this.context.fillStyle = '#37d7ff';
+
+    const textX = this.viewportWidth / 2;
+    const textY = this.viewportHeight / 2;
+
+    this.context.fillText('Вы спасли человечество!', textX, textY);
+  }
+
+  lose() {
+    this.isPlaying = false;
+
+    this.context.font = 'bold 36px Courier New';
+    this.context.textAlign = 'center';
+    this.context.textBaseline = 'middle';
+    this.context.fillStyle = '#37d7ff';
+
+    const textX = this.viewportWidth / 2;
+    const textY = this.viewportHeight / 2;
+
+    this.context.fillText('Закончилась энергия. Вы проиграли.', textX, textY);
+  }
+
   showLoadingPlaceholder() {
     this.context.font = '14px Tahoma';
     this.context.textAlign = 'center';
@@ -140,10 +186,19 @@ class IsoWorld {
   }
 
   mainLoop() {
-    this.clearViewport('#1A1B1F');
-    this.draw();
-
-    window.requestAnimationFrame(() => { this.mainLoop(); });
+    if (this.isPlaying) {
+      if (this.energy < 0) this.energy = 0;
+      this.printStats();
+      this.clearViewport('#1A1B1F');
+      if (this.harvest >= this.requiredHarvest) {
+        this.win();
+      } else if (this.energy <= 0) {
+        this.lose();
+      } else {
+        this.draw();
+        window.requestAnimationFrame(() => { this.mainLoop(); });
+      }
+    }
   }
 
   limit(value, min, max) { return Math.max(min, Math.min(value, max)); }
@@ -275,12 +330,17 @@ class IsoWorld {
     const plot = this.plots.find((plot) => plot.x === this.mouseTileX && plot.y === this.mouseTileY);
     if (plot.skin === 2) {
       plot.skin = 3;
+      this.energy -= Math.floor(Math.random() * 70);
     } else if (plot.skin === 3) {
       plot.setPlant(new Plant());
+      this.energy -= Math.floor(Math.random() * 20);
     } else if (plot.skin === 7) {
       const plotHarvest = plot.harvestPlant();
       this.harvest += plotHarvest;
-      console.log(this.harvest);
+      this.energy -= Math.floor(Math.random() * 20);
+    } else if (plot.skin === 8) {
+      plot.clear();
+      this.energy -= Math.floor(Math.random() * 70);
     }
   }
 }
