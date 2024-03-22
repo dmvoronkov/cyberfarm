@@ -24,4 +24,12 @@ function startNewGame(container) {
   main.appendChild(canvas);
   const isoWorld = new IsoWorld();
   isoWorld.init('isometric-canvas', '/images/tilesheet.png');
+
+  const saveBtn = document.querySelector('#saveBtn');
+  saveBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    isoWorld.save();
+    isoWorld.stop();
+    loadMenu(container);
+  });
 }

@@ -1,6 +1,7 @@
 class IsoWorld {
   constructor() {
     this.isPlaying = false;
+    this.saveId = null;
 
     this.viewportWidth = 960;
     this.viewportHeight = 480;
@@ -90,6 +91,19 @@ class IsoWorld {
 	  this.canvas.onmousedown = (e) => { this.onMouseDown(e); this.mouseDown = true; return false; };
     this.canvas.onmousemove = (e) => { this.onMouseMove(e); };
 
+    try {
+      const response = await fetch('/api/save/init', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const result = await response.json();
+      this.saveId = result.saveId;
+    } catch (error) {
+      console.log(error);
+    }
+
     this.updateMapOffset(300, -100);
     this.mainLoop();
     this.startSeasons();
@@ -123,8 +137,30 @@ class IsoWorld {
     energySpan.innerText = this.energy;
   }
 
-  save() {
+  async save() {
+    const data = {
+      saveId: this.saveId,
+      harvested: this.harvest,
+      required_harvest: this.requiredHarvest,
+      energy: this.energy,
+      tilemap: JSON.stringify(this.tileMap),
+    };
+    try {
+      const response = await fetch('/api/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      const result = await response.json();
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
+  stop() {
+    this.isPlaying = false;
   }
 
   win() {

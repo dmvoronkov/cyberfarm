@@ -39,8 +39,29 @@ form .error {
   color: red;
 }
 
-.form-footer,
-.form-footer a {
+.form-footer {
   text-align: center;
   color: white;
+}
+
+.form-footer a {
+  color: #37d7ff;
+}
+
+.save-div {
+  display: flex;
+  padding: 20px 0;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #555;
+  justify-content: left;
+}
+
+.save-div .image {
+  margin-right: 50px;
+}
+
+.save-div .image img {
+  object-fit: cover;
+  width: 100px;
+  height: 100px;
 }

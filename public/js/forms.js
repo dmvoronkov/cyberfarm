@@ -22,6 +22,17 @@ function loadMenu(container) {
     startNewGame(container);
   });
 
+  loadGameBtn.addEventListener('click', async (event) => {
+    event.preventDefault();
+    try {
+      const response = await fetch('/api/save/all');
+      const result = await response.json();
+      await loadAllUserSaves(container, result);
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
   logoutBtn.addEventListener('click', async (event) => {
     event.preventDefault();
     try {
@@ -36,6 +47,56 @@ function loadMenu(container) {
     } catch (error) {
       console.log(error);
     }
+  });
+}
+
+async function getRandomImage() {
+  try {
+    const response = await fetch('https://source.unsplash.com/random/?cyberpunk');
+    return response.url;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function loadAllUserSaves(container, savesArray) {
+  container.innerHTML = '';
+  container.className = 'container neon-bg';
+  const formContainer = document.createElement('div');
+  formContainer.className = 'form-container';
+  formContainer.innerHTML = `
+          <h1 id="game-title">Cyber Farm</h1>
+          <h2>Сохраненные игры</h2>`;
+  const image = await getRandomImage();
+  const savesDivs = savesArray.map((save) => {
+    const saveDiv = document.createElement('div');
+    saveDiv.className = 'save-div';
+    saveDiv.innerHTML = `
+      <div class="image"><img src="${image}" alt="cyberpunk" /></div>
+      <div class="info">
+        <h3>${new Date(save.createdAt).toLocaleString('ru-RU', { timeZone: 'UTC' })}</h3>
+        <p>Собранный урожай: <span class="digit">${save.harvested}</span>/<span class="digit">${save.required_harvest}</span></p>
+        <p>Уровень энергии: <span class="digit">${save.energy}</span></p>
+      </div>`;
+    return saveDiv;
+  });
+
+  savesDivs.forEach((div) => formContainer.appendChild(div));
+
+  const formFooter = document.createElement('div');
+  formFooter.className = 'form-footer';
+  const backLink = document.createElement('a');
+  backLink.id = 'back-link';
+  backLink.href = '#';
+  backLink.innerText = 'Назад в главное меню';
+  formFooter.appendChild(backLink);
+  formContainer.appendChild(formFooter);
+  container.appendChild(formContainer);
+  getRandomImage();
+
+  backLink.addEventListener('click', (event) => {
+    event.preventDefault();
+    loadMenu(container);
   });
 }
 
