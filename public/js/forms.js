@@ -8,18 +8,16 @@ function loadMenu(container) {
     <h2>Главное меню</h2>
     <a class="button" id="newGameBtn" href="#">Новая игра</a>
     <a class="button" id="loadGameBtn" href="#">Загрузить игру</a>
-    <a class="button" id="statsBtn" href="#">Статистика</a>
     <a class="button" id="logoutBtn" href="#">Выйти</a>`;
   container.appendChild(formContainer);
 
   const newGameBtn = formContainer.querySelector('#newGameBtn');
   const loadGameBtn = formContainer.querySelector('#loadGameBtn');
-  const statsBtn = formContainer.querySelector('#statsBtn');
   const logoutBtn = formContainer.querySelector('#logoutBtn');
 
   newGameBtn.addEventListener('click', (event) => {
     event.preventDefault();
-    startNewGame(container);
+    startGame(container);
   });
 
   loadGameBtn.addEventListener('click', async (event) => {
@@ -68,21 +66,26 @@ async function loadAllUserSaves(container, savesArray) {
           <h1 id="game-title">Cyber Farm</h1>
           <h2>Сохраненные игры</h2>`;
   const image = await getRandomImage();
+  const allSavesDiv = document.createElement('div');
+  allSavesDiv.className = 'all-saves';
   const savesDivs = savesArray.map((save) => {
     const saveDiv = document.createElement('div');
     saveDiv.className = 'save-div';
+    saveDiv.id = save.id;
     saveDiv.innerHTML = `
       <div class="image"><img src="${image}" alt="cyberpunk" /></div>
       <div class="info">
         <h3>${new Date(save.createdAt).toLocaleString('ru-RU', { timeZone: 'UTC' })}</h3>
-        <p>Собранный урожай: <span class="digit">${save.harvested}</span>/<span class="digit">${save.required_harvest}</span></p>
-        <p>Уровень энергии: <span class="digit">${save.energy}</span></p>
+        <p>Собранный урожай: <span class="digits">${save.harvested}</span>/<span class="digits">${save.required_harvest}</span></p>
+        <p>Уровень энергии: <span class="digits">${save.energy}</span></p>
+        <br />
+        <a href="#" class="loadGameLink">Загрузить</a>
       </div>`;
     return saveDiv;
   });
 
-  savesDivs.forEach((div) => formContainer.appendChild(div));
-
+  savesDivs.forEach((div) => allSavesDiv.appendChild(div));
+  formContainer.appendChild(allSavesDiv);
   const formFooter = document.createElement('div');
   formFooter.className = 'form-footer';
   const backLink = document.createElement('a');
@@ -97,6 +100,15 @@ async function loadAllUserSaves(container, savesArray) {
   backLink.addEventListener('click', (event) => {
     event.preventDefault();
     loadMenu(container);
+  });
+
+  allSavesDiv.addEventListener('click', (event) => {
+    if (event.target.classList.contains('loadGameLink')) {
+      event.preventDefault();
+      const saveId = Number(event.target.closest('.save-div').id);
+      const save = savesArray.find((el) => el.id === saveId);
+      startGame(container, save);
+    }
   });
 }
 

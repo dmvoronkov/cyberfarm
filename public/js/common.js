@@ -1,4 +1,4 @@
-function startNewGame(container) {
+function startGame(container, saveObject) {
   container.innerHTML = '';
   container.className = 'container';
   const flexColumn = document.createElement('div');
@@ -23,7 +23,7 @@ function startNewGame(container) {
   canvas.id = 'isometric-canvas';
   main.appendChild(canvas);
   const isoWorld = new IsoWorld();
-  isoWorld.init('isometric-canvas', '/images/tilesheet.png');
+  isoWorld.init('isometric-canvas', '/images/tilesheet.png', saveObject);
 
   const saveBtn = document.querySelector('#saveBtn');
   saveBtn.addEventListener('click', (event) => {

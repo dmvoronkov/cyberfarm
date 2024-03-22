@@ -61,8 +61,7 @@ class IsoWorld {
 	  this.projectedTileHeight = this.tileHeight - this.overlapWidth - this.overlapHeight;
   }
 
-  async init(canvasId, tileSheetURI) {
-    this.isPlaying = true;
+  async init(canvasId, tileSheetURI, saveObject) {
     const requiredHarvestSpan = document.querySelector('#required-harvest');
     requiredHarvestSpan.innerText = this.requiredHarvest;
 
@@ -91,20 +90,25 @@ class IsoWorld {
 	  this.canvas.onmousedown = (e) => { this.onMouseDown(e); this.mouseDown = true; return false; };
     this.canvas.onmousemove = (e) => { this.onMouseMove(e); };
 
-    try {
-      const response = await fetch('/api/save/init', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const result = await response.json();
-      this.saveId = result.saveId;
-    } catch (error) {
-      console.log(error);
+    if (saveObject) {
+      this.loadSaved(saveObject);
+    } else {
+      try {
+        const response = await fetch('/api/save/init', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        const result = await response.json();
+        this.saveId = result.saveId;
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     this.updateMapOffset(300, -100);
+    this.isPlaying = true;
     this.mainLoop();
     this.startSeasons();
   }
@@ -154,9 +158,38 @@ class IsoWorld {
         body: JSON.stringify(data),
       });
       const result = await response.json();
+      console.log(this.saveId);
+      console.log(typeof this.saveId);
     } catch (error) {
       console.log(error);
     }
+  }
+
+  loadSaved(saveObject) {
+    const {
+      id, harvested, required_harvest, energy, tilemap,
+    } = saveObject;
+    this.saveId = Number(id);
+    this.harvest = Number(harvested);
+    this.requiredHarvest = Number(required_harvest);
+    this.energy = Number(energy);
+    const newTileMap = JSON.parse(tilemap);
+
+    for (let x = 0; x < this.numRows; x++) {
+      for (let y = 0; y < this.numCols; y++) {
+        this.tileMap[x][y].skin = newTileMap[x][y].skin;
+        this.tileMap[x][y].hasPlant = newTileMap[x][y].hasPlant;
+        if (newTileMap[x][y].hasPlant) {
+          this.tileMap[x][y].setPlant(new Plant());
+          this.tileMap[x][y].plant.age = newTileMap[x][y].plant.age;
+          this.tileMap[x][y].plant.harvest = newTileMap[x][y].plant.harvest;
+          this.tileMap[x][y].plant.isAlive = newTileMap[x][y].plant.isAlive;
+          this.tileMap[x][y].plant.harvestRange = newTileMap[x][y].plant.harvestRange;
+          this.tileMap[x][y].plant.skin = newTileMap[x][y].plant.skin;
+        }
+      }
+    }
+    this.plots = this.tileMap.flat();
   }
 
   stop() {
@@ -200,7 +233,7 @@ class IsoWorld {
     const textX = this.viewportWidth / 2;
     const textY = this.viewportHeight / 2;
 
-    this.context.fillText('LOADING ASSETS...', textX, textY);
+    this.context.fillText('ЗАГРУЗКА...', textX, textY);
   }
 
   async loadImage(uri) {
