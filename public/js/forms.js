@@ -22,13 +22,7 @@ function loadMenu(container) {
 
   loadGameBtn.addEventListener('click', async (event) => {
     event.preventDefault();
-    try {
-      const response = await fetch('/api/save/all');
-      const result = await response.json();
-      await loadAllUserSaves(container, result);
-    } catch (error) {
-      console.log(error);
-    }
+    await loadAllUserSaves(container);
   });
 
   logoutBtn.addEventListener('click', async (event) => {
@@ -57,59 +51,79 @@ async function getRandomImage() {
   }
 }
 
-async function loadAllUserSaves(container, savesArray) {
-  container.innerHTML = '';
-  container.className = 'container neon-bg';
-  const formContainer = document.createElement('div');
-  formContainer.className = 'form-container';
-  formContainer.innerHTML = `
+async function loadAllUserSaves(container) {
+  try {
+    const response = await fetch('/api/save/all');
+    const savesArray = await response.json();
+    container.innerHTML = '';
+    container.className = 'container neon-bg';
+    const formContainer = document.createElement('div');
+    formContainer.className = 'form-container';
+    formContainer.innerHTML = `
           <h1 id="game-title">Cyber Farm</h1>
           <h2>Сохраненные игры</h2>`;
-  const image = await getRandomImage();
-  const allSavesDiv = document.createElement('div');
-  allSavesDiv.className = 'all-saves';
-  const savesDivs = savesArray.map((save) => {
-    const saveDiv = document.createElement('div');
-    saveDiv.className = 'save-div';
-    saveDiv.id = save.id;
-    saveDiv.innerHTML = `
+    const image = await getRandomImage();
+    const allSavesDiv = document.createElement('div');
+    allSavesDiv.className = 'all-saves';
+    const savesDivs = savesArray.map((save) => {
+      const saveDiv = document.createElement('div');
+      saveDiv.className = 'save-div';
+      saveDiv.id = save.id;
+      saveDiv.innerHTML = `
       <div class="image"><img src="${image}" alt="cyberpunk" /></div>
       <div class="info">
-        <h3>${new Date(save.createdAt).toLocaleString('ru-RU', { timeZone: 'UTC' })}</h3>
+        <h3>${new Date(save.updatedAt).toLocaleString('ru-RU', { timeZone: 'UTC' })}</h3>
         <p>Собранный урожай: <span class="digits">${save.harvested}</span>/<span class="digits">${save.required_harvest}</span></p>
         <p>Уровень энергии: <span class="digits">${save.energy}</span></p>
         <br />
-        <a href="#" class="loadGameLink">Загрузить</a>
+        <a href="#" class="loadGameLink">Загрузить</a> <a href="#" class="deleteSaveLink">Удалить</a>
       </div>`;
-    return saveDiv;
-  });
+      return saveDiv;
+    });
 
-  savesDivs.forEach((div) => allSavesDiv.appendChild(div));
-  formContainer.appendChild(allSavesDiv);
-  const formFooter = document.createElement('div');
-  formFooter.className = 'form-footer';
-  const backLink = document.createElement('a');
-  backLink.id = 'back-link';
-  backLink.href = '#';
-  backLink.innerText = 'Назад в главное меню';
-  formFooter.appendChild(backLink);
-  formContainer.appendChild(formFooter);
-  container.appendChild(formContainer);
-  getRandomImage();
+    savesDivs.forEach((div) => allSavesDiv.appendChild(div));
+    formContainer.appendChild(allSavesDiv);
+    const formFooter = document.createElement('div');
+    formFooter.className = 'form-footer';
+    const backLink = document.createElement('a');
+    backLink.id = 'back-link';
+    backLink.href = '#';
+    backLink.innerText = 'Назад в главное меню';
+    formFooter.appendChild(backLink);
+    formContainer.appendChild(formFooter);
+    container.appendChild(formContainer);
+    getRandomImage();
 
-  backLink.addEventListener('click', (event) => {
-    event.preventDefault();
-    loadMenu(container);
-  });
-
-  allSavesDiv.addEventListener('click', (event) => {
-    if (event.target.classList.contains('loadGameLink')) {
+    backLink.addEventListener('click', (event) => {
       event.preventDefault();
-      const saveId = Number(event.target.closest('.save-div').id);
-      const save = savesArray.find((el) => el.id === saveId);
-      startGame(container, save);
-    }
-  });
+      loadMenu(container);
+    });
+
+    allSavesDiv.addEventListener('click', async (event) => {
+      if (event.target.classList.contains('loadGameLink')) {
+        event.preventDefault();
+        const saveId = Number(event.target.closest('.save-div').id);
+        const save = savesArray.find((el) => el.id === saveId);
+        startGame(container, save);
+      }
+      if (event.target.classList.contains('deleteSaveLink')) {
+        event.preventDefault();
+        const saveDiv = event.target.closest('.save-div');
+        const response = await fetch('/api/save', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id: Number(saveDiv.id) }),
+        });
+        const result = await response.json();
+        saveDiv.remove();
+        console.log(result);
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 function loadRegisterForm(container) {

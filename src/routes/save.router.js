@@ -20,6 +20,16 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.delete('/', async (req, res) => {
+  try {
+    const { id } = req.body;
+    const save = await Save.destroy({ where: { id } });
+    res.json({ status: '200', message: 'Удалено' });
+  } catch (error) {
+    res.json({ status: '500', message: 'Ошибка при удалении' });
+  }
+});
+
 router.post('/init', async (req, res) => {
   try {
     const user = await User.findOne({ where: { username: req.session.login } });

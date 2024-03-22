@@ -158,8 +158,6 @@ class IsoWorld {
         body: JSON.stringify(data),
       });
       const result = await response.json();
-      console.log(this.saveId);
-      console.log(typeof this.saveId);
     } catch (error) {
       console.log(error);
     }
