@@ -1,12 +1,9 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const container = document.querySelector('.container');
+  const user = await checkSession();
 
-  function checkCookie(cname) {
-    return document.cookie.includes(cname);
-  }
-
-  if (checkCookie('cyberfarm')) {
-    loadMenu(container);
+  if (user) {
+    loadMenu(container, user);
   } else {
     loadLoginForm(container);
   }

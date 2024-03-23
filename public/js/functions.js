@@ -1,4 +1,4 @@
-function loadMenu(container) {
+function loadMenu(container, username) {
   container.innerHTML = '';
   container.className = 'container neon-bg';
   const formContainer = document.createElement('div');
@@ -8,7 +8,8 @@ function loadMenu(container) {
     <h2>Главное меню</h2>
     <a class="button" id="newGameBtn" href="#">Новая игра</a>
     <a class="button" id="loadGameBtn" href="#">Загрузить игру</a>
-    <a class="button" id="logoutBtn" href="#">Выйти</a>`;
+    <a class="button" id="logoutBtn" href="#">Выйти</a>
+    <div class="form-footer font-size-20px"><span class="cyan">Игрок:</span> <b>${username}</b></div>`;
   container.appendChild(formContainer);
 
   const newGameBtn = formContainer.querySelector('#newGameBtn');
@@ -17,12 +18,12 @@ function loadMenu(container) {
 
   newGameBtn.addEventListener('click', (event) => {
     event.preventDefault();
-    startGame(container);
+    startGame(container, null, username);
   });
 
   loadGameBtn.addEventListener('click', async (event) => {
     event.preventDefault();
-    await loadAllUserSaves(container);
+    await loadAllUserSaves(container, username);
   });
 
   logoutBtn.addEventListener('click', async (event) => {
@@ -51,7 +52,7 @@ async function getRandomImage() {
   }
 }
 
-async function loadAllUserSaves(container) {
+async function loadAllUserSaves(container, username) {
   try {
     const response = await fetch('/api/save');
     const savesArray = await response.json();
@@ -96,7 +97,7 @@ async function loadAllUserSaves(container) {
 
     backLink.addEventListener('click', (event) => {
       event.preventDefault();
-      loadMenu(container);
+      loadMenu(container, username);
     });
 
     allSavesDiv.addEventListener('click', async (event) => {
@@ -104,7 +105,7 @@ async function loadAllUserSaves(container) {
         event.preventDefault();
         const saveId = Number(event.target.closest('.save-div').id);
         const save = savesArray.find((el) => el.id === saveId);
-        startGame(container, save);
+        startGame(container, save, username);
       }
       if (event.target.classList.contains('deleteSaveLink')) {
         event.preventDefault();
@@ -191,7 +192,7 @@ function loadRegisterForm(container) {
         }
       }
       if (result.status === '201') {
-        loadMenu(container);
+        loadMenu(container, result.username);
       }
     } catch (error) {
       console.log(error);
@@ -260,7 +261,7 @@ function loadLoginForm(container) {
         errorDiv.innerText = result.message;
       }
       if (result.status === '200') {
-        loadMenu(container);
+        loadMenu(container, result.username);
       }
     } catch (error) {
       console.log(error);
@@ -268,7 +269,7 @@ function loadLoginForm(container) {
   });
 }
 
-function startGame(container, saveObject) {
+function startGame(container, saveObject, username) {
   container.innerHTML = '';
   container.className = 'container';
   const flexColumn = document.createElement('div');
@@ -300,6 +301,26 @@ function startGame(container, saveObject) {
     event.preventDefault();
     isoWorld.save();
     isoWorld.stop();
-    loadMenu(container);
+    loadMenu(container, username);
   });
+}
+
+async function checkSession() {
+  try {
+    const response = await fetch('/api/user/session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const result = await response.json();
+    if (result.status === '404') {
+      return null;
+    }
+    if (result.status === '200') {
+      return result.username;
+    }
+  } catch (error) {
+    console.log(error);
+  }
 }

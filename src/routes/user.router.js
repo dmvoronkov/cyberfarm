@@ -12,7 +12,7 @@ router.post('/', async (req, res) => {
     await user.save();
     req.session.login = user.username;
     req.session.save(() => {
-      res.json({ status: '201', id: user.id });
+      res.json({ status: '201', username: user.username });
     });
   } catch (error) {
     let message;
@@ -50,7 +50,6 @@ router.post('/login', async (req, res) => {
       }
     }
   } catch (error) {
-    console.log(error);
     res.json({ status: '500', message: 'Ошибка при авторизации' });
   }
 });
@@ -60,6 +59,14 @@ router.post('/logout', (req, res) => {
     res.clearCookie('cyberfarm');
     res.json({ status: '200' });
   });
+});
+
+router.post('/session', (req, res) => {
+  if (req.session.login) {
+    res.json({ status: '200', message: 'Сессия найдена', username: req.session.login });
+  } else {
+    res.json({ status: '404', message: 'Сессия не найдена' });
+  }
 });
 
 module.exports = router;
