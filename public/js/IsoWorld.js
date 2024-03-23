@@ -16,7 +16,7 @@ class IsoWorld {
     this.plots = [];
 
     this.canvas = null;
-	  this.context = null;
+    this.context = null;
     this.tileSheetImg = null;
     this.tileMap = null;
 
@@ -30,7 +30,7 @@ class IsoWorld {
     this.mouseTileY = 0;
 
     // this.tileSheetWidth = 390;
-	  // this.tileSheetHeight = 500;
+    // this.tileSheetHeight = 500;
 
     // The range of tiles to render based on visibility.
     // Will be updated as map is dragged around.
@@ -46,19 +46,19 @@ class IsoWorld {
     this.spritePadding = 2;
 
     // The full dimensions of the tile sprite.
-	  this.blockWidth = 74;
-	  this.blockHeight = 70;
+    this.blockWidth = 74;
+    this.blockHeight = 70;
 
     // The "top only" dimensions of the tile sprite.
-	  this.tileWidth = 74;
-	  this.tileHeight = 44;
+    this.tileWidth = 74;
+    this.tileHeight = 44;
 
     // How much the tiles should overlap when drawn.
-	  this.overlapWidth = 2;
-	  this.overlapHeight = 2;
+    this.overlapWidth = 2;
+    this.overlapHeight = 2;
 
-	  this.projectedTileWidth = this.tileWidth - this.overlapWidth - this.overlapHeight;
-	  this.projectedTileHeight = this.tileHeight - this.overlapWidth - this.overlapHeight;
+    this.projectedTileWidth = this.tileWidth - this.overlapWidth - this.overlapHeight;
+    this.projectedTileHeight = this.tileHeight - this.overlapWidth - this.overlapHeight;
   }
 
   async init(canvasId, tileSheetURI, saveObject) {
@@ -68,9 +68,9 @@ class IsoWorld {
     this.canvas = document.getElementById(canvasId);
 
     if (this.canvas == null) {
-		  console.error(`Could not find canvas with id: ${canvasId}`);
-		  return;
-	  }
+      console.error(`Could not find canvas with id: ${canvasId}`);
+      return;
+    }
 
     this.canvas.width = this.viewportWidth;
     this.canvas.height = this.viewportHeight;
@@ -85,16 +85,16 @@ class IsoWorld {
     this.buildMap();
 
     this.canvas.onmouseclick = (e) => { e.stopPropagation(); e.preventDefault(); return false; };
-	  this.canvas.oncontextmenu = (e) => { e.stopPropagation(); e.preventDefault(); return false; };
-	  this.canvas.onmouseup = (e) => { this.mouseDown = false; return false; };
-	  this.canvas.onmousedown = (e) => { this.onMouseDown(e); this.mouseDown = true; return false; };
+    this.canvas.oncontextmenu = (e) => { e.stopPropagation(); e.preventDefault(); return false; };
+    this.canvas.onmouseup = (e) => { this.mouseDown = false; return false; };
+    this.canvas.onmousedown = (e) => { this.onMouseDown(e); this.mouseDown = true; return false; };
     this.canvas.onmousemove = (e) => { this.onMouseMove(e); };
 
     if (saveObject) {
       this.loadSaved(saveObject);
     } else {
       try {
-        const response = await fetch('/api/save/init', {
+        const response = await fetch('/api/save', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -121,17 +121,19 @@ class IsoWorld {
 
   passGrowingSeason() {
     setInterval(() => {
-      this.plots.filter((plot) => plot.hasPlant).forEach((plot) => {
-        plot.plant.passGrowingSeason();
-        plot.changeSkin(plot.plant.skin);
-      });
-      this.year += 0.25;
+      if (this.isPlaying) {
+        this.plots.filter((plot) => plot.hasPlant).forEach((plot) => {
+          plot.plant.passGrowingSeason();
+          plot.changeSkin(plot.plant.skin);
+        });
+        this.year += 0.25;
+      }
     }, 5000);
   }
 
   clearViewport(color) {
     this.context.fillStyle = color;
-	  this.context.fillRect(0, 0, this.viewportWidth, this.viewportHeight);
+    this.context.fillRect(0, 0, this.viewportWidth, this.viewportHeight);
   }
 
   printStats() {
@@ -151,13 +153,12 @@ class IsoWorld {
     };
     try {
       const response = await fetch('/api/save', {
-        method: 'POST',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
-      const result = await response.json();
     } catch (error) {
       console.log(error);
     }
@@ -172,7 +173,6 @@ class IsoWorld {
     this.requiredHarvest = Number(required_harvest);
     this.energy = Number(energy);
     const newTileMap = JSON.parse(tilemap);
-
     for (let x = 0; x < this.numRows; x++) {
       for (let y = 0; y < this.numCols; y++) {
         this.tileMap[x][y].skin = newTileMap[x][y].skin;
@@ -184,6 +184,7 @@ class IsoWorld {
           this.tileMap[x][y].plant.isAlive = newTileMap[x][y].plant.isAlive;
           this.tileMap[x][y].plant.harvestRange = newTileMap[x][y].plant.harvestRange;
           this.tileMap[x][y].plant.skin = newTileMap[x][y].plant.skin;
+          this.tileMap[x][y].skin = this.tileMap[x][y].plant.skin;
         }
       }
     }
@@ -223,7 +224,7 @@ class IsoWorld {
   }
 
   showLoadingPlaceholder() {
-    this.context.font = '14px Tahoma';
+    this.context.font = '14px Courier New';
     this.context.textAlign = 'center';
     this.context.textBaseline = 'middle';
     this.context.fillStyle = '#EEEEEE';
@@ -346,7 +347,6 @@ class IsoWorld {
     const screenX = screenPos.x;
     const screenY = screenPos.y;
 
-    // to save images, the mouse cursor is just a tile sprite
     const drawTile = 0;
 
     const spriteWidth = this.blockWidth + (2 * this.spritePadding);
@@ -358,15 +358,15 @@ class IsoWorld {
     this.context.drawImage(this.tileSheetImg, srcX, srcY, this.blockWidth, this.blockHeight, screenX, screenY, this.blockWidth, this.blockHeight);
 
     // output the tile location of the mouse
-    this.context.font = 'bold 11px Tahoma';
-    this.context.textAlign = 'center';
-    this.context.textBaseline = 'middle';
-    this.context.fillStyle = '#fd905d';
+    // this.context.font = 'bold 11px Tahoma';
+    // this.context.textAlign = 'center';
+    // this.context.textBaseline = 'middle';
+    // this.context.fillStyle = '#fd905d';
 
-    const textX = screenX + (this.projectedTileWidth / 2);
-    const textY = screenY + (this.projectedTileHeight / 2);
+    // const textX = screenX + (this.projectedTileWidth / 2);
+    // const textY = screenY + (this.projectedTileHeight / 2);
 
-    const text = `(${this.mouseTileX}, ${this.mouseTileY})`;
+    // const text = `(${this.mouseTileX}, ${this.mouseTileY})`;
 
     // this.context.fillText(text, textX, textY);
   }

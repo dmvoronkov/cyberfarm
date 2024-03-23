@@ -3,7 +3,31 @@ const { User, Save } = require('../../db/models');
 
 const router = express.Router();
 
+router.get('/', async (req, res) => {
+  try {
+    if (req.session.login) {
+      const user = await User.findOne({ where: { username: req.session.login } });
+      const saves = await Save.findAll({ where: { user_id: user.id }, order: [['updatedAt', 'DESC']] });
+      res.json(saves);
+    } else {
+      res.redirect('/');
+    }
+  } catch (error) {
+    res.json({ status: '404', message: 'Сохраненные игры не найдены' });
+  }
+});
+
 router.post('/', async (req, res) => {
+  try {
+    const user = await User.findOne({ where: { username: req.session.login } });
+    const save = await Save.create({ user_id: user.id });
+    res.json({ status: '201', message: 'Сохранено', saveId: save.id });
+  } catch (error) {
+    res.json({ status: '500', message: 'Ошибка при сохранении' });
+  }
+});
+
+router.patch('/', async (req, res) => {
   try {
     const {
       saveId, harvested, required_harvest, energy, tilemap,
@@ -27,26 +51,6 @@ router.delete('/', async (req, res) => {
     res.json({ status: '200', message: 'Удалено' });
   } catch (error) {
     res.json({ status: '500', message: 'Ошибка при удалении' });
-  }
-});
-
-router.post('/init', async (req, res) => {
-  try {
-    const user = await User.findOne({ where: { username: req.session.login } });
-    const save = await Save.create({ user_id: user.id });
-    res.json({ status: '201', message: 'Сохранено', saveId: save.id });
-  } catch (error) {
-    res.json({ status: '500', message: 'Ошибка при сохранении' });
-  }
-});
-
-router.get('/all', async (req, res) => {
-  if (req.session.login) {
-    const user = await User.findOne({ where: { username: req.session.login } });
-    const saves = await Save.findAll({ where: { user_id: user.id }, order: [['updatedAt', 'DESC']] });
-    res.json(saves);
-  } else {
-    res.redirect('/');
   }
 });
 

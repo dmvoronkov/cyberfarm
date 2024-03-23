@@ -8,13 +8,14 @@ class Plant {
   }
 
   passGrowingSeason() {
-    this.age += 0.25;
+    if (this.isAlive) this.age += 0.25;
     if (this.age >= 0.5 && this.age < 1 && this.isAlive) {
       this.skin = 6;
     }
     if (this.age >= 1 && this.isAlive && this.harvest === 0) {
       this.skin = 7;
       this.setHarvest();
+      this.isAlive = false;
     }
   }
 

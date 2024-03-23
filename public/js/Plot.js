@@ -15,7 +15,6 @@ class Plot {
 
   harvestPlant() {
     const { harvest } = this.plant;
-    this.plant.isAlive = false;
     this.plant.skin = 8;
     this.plant.harvest = 0;
     this.changeSkin(this.plant.skin);
@@ -29,6 +28,6 @@ class Plot {
   clear() {
     this.hasPlant = false;
     this.changeSkin(3);
-    this.tree = null;
+    this.plant = null;
   }
 }
